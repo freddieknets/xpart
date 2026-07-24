@@ -10,11 +10,38 @@ import numpy as np
 import pytest
 import xtrack as xt
 import xobjects as xo
+from scipy.constants import e, m_p
 
 import xpart as xp
+from xpart.longitudinal.rf_bucket import RFBucket
 from xobjects.test_helpers import fix_random_seed
 
 TEST_DATA_FOLDER = pathlib.Path(__file__).parent / '../../xtrack/test_data'
+
+
+def test_rf_bucket_auto_centers_with_phase_offset():
+    circumference = 26658.883
+    harmonic = 35640
+    zmax = circumference / (2 * harmonic)
+
+    bucket = RFBucket(
+        circumference=circumference,
+        gamma=479.6,
+        mass_kg=m_p,
+        charge_coulomb=e,
+        alpha_array=np.atleast_1d(3.2163e-4),
+        harmonic_list=np.atleast_1d(harmonic),
+        voltage_list=np.atleast_1d(6e6),
+        phi_offset_list=np.atleast_1d(1.0 + np.pi),
+        p_increment=0,
+        zeta0=None,
+    )
+
+    assert bucket.z_right > bucket.z_left
+    xo.assert_allclose(bucket.zeta0, bucket.z_sfp[0],
+                       rtol=1e-12, atol=1e-14)
+    xo.assert_allclose(bucket.z_right - bucket.z_left, 2 * zmax,
+                       rtol=1e-12, atol=1e-14)
 
 
 @fix_random_seed(12345)

@@ -63,7 +63,9 @@ class RFBucket:
         - charge_coulomb is the charge of the particle type in the beam
         - zeta0 determines the centre for the bucket interval
         over which the root finding (of the electric force field to
-        calibrate the separatrix Hamiltonian value to zero) is done.
+        calibrate the separatrix Hamiltonian value to zero) is done. If None,
+        it is determined from the outermost unstable fixed points of the
+        non-accelerated bucket.
         - shift_zeta_list accounts for the zeta slippage between the start
         of the ring and each RF element location.
         '''
@@ -105,7 +107,18 @@ class RFBucket:
         zmax = self.circumference / (2*np.amin(self.h))
 
         if zeta0 is None:
-            raise ValueError('zeta0 must be provided')
+            domain_to_find_bucket_centre = np.linspace(
+                -1.999*zmax, 1.999*zmax, self.sampling_points)
+            z0 = self.zero_crossings(
+                partial(self.total_force, acceleration=False),
+                domain_to_find_bucket_centre)
+            convex_pot0 = (
+                np.array(self.total_potential(z0, acceleration=False)) *
+                np.sign(self.eta0) / self.charge_coulomb)
+            outer_separatrix_pot0 = np.min(convex_pot0)
+            outer_separatrix_z0 = z0[np.isclose(
+                convex_pot0, outer_separatrix_pot0)]
+            zeta0 = np.mean(outer_separatrix_z0)
         self.zeta0 = zeta0
 
         """Minimum and maximum z values on either side of the

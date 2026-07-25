@@ -61,11 +61,7 @@ class RFBucket:
         Arguments:
         - mass_kg is the mass of the particle type in the beam
         - charge_coulomb is the charge of the particle type in the beam
-        - zeta0 determines the centre for the bucket interval
-        over which the root finding (of the electric force field to
-        calibrate the separatrix Hamiltonian value to zero) is done. If None,
-        it is determined from the outermost unstable fixed points of the
-        non-accelerated bucket.
+        - zeta0 (optional) is the zeta location of one stable fixed point.
         - shift_zeta_list accounts for the zeta slippage between the start
         of the ring and each RF element location.
         '''

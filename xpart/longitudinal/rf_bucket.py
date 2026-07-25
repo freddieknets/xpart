@@ -428,7 +428,6 @@ class RFBucket:
         of the total_force) by comparing the voltages between the
         out-most UFP.
         '''
-        breakpoint()
         z0 = np.atleast_1d(self.zero_crossings(self.total_force))
 
         if not z0.size:

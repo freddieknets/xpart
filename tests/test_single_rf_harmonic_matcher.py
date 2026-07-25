@@ -24,6 +24,8 @@ def test_rf_bucket_auto_centers_with_phase_offset():
     harmonic = 35640
     zmax = circumference / (2 * harmonic)
 
+    phi = 1.0 + np.pi  # non-zero RF phase
+
     bucket = RFBucket(
         circumference=circumference,
         gamma=479.6,
@@ -32,13 +34,14 @@ def test_rf_bucket_auto_centers_with_phase_offset():
         alpha_array=np.atleast_1d(3.2163e-4),
         harmonic_list=np.atleast_1d(harmonic),
         voltage_list=np.atleast_1d(6e6),
-        phi_offset_list=np.atleast_1d(1.0 + np.pi),
+        phi_offset_list=np.atleast_1d(phi),
         p_increment=0,
         zeta0=None,
     )
 
+    z_sfp_expected = (phi+np.pi-2*np.pi) / (2 * np.pi) * circumference / harmonic
     assert bucket.z_right > bucket.z_left
-    xo.assert_allclose(bucket.zeta0, bucket.z_sfp[0],
+    xo.assert_allclose(bucket.z_sfp[0], z_sfp_expected,
                        rtol=1e-12, atol=1e-14)
     xo.assert_allclose(bucket.z_right - bucket.z_left, 2 * zmax,
                        rtol=1e-12, atol=1e-14)

@@ -118,7 +118,12 @@ class RFBucket:
             outer_separatrix_pot0 = np.min(convex_pot0)
             outer_separatrix_z0 = z0[np.isclose(
                 convex_pot0, outer_separatrix_pot0)]
-            zeta0 = np.mean(outer_separatrix_z0)
+            approximate_bucket_center = np.mean(outer_separatrix_z0)
+            interval = (approximate_bucket_center - 1.2*zmax,
+                        approximate_bucket_center + 1.2*zmax)
+        else:
+            interval = (zeta0 - 1.2*zmax, zeta0 + 1.2*zmax)
+
         self.zeta0 = zeta0
 
         """Minimum and maximum z values on either side of the
@@ -127,7 +132,7 @@ class RFBucket:
         (This range is always larger than the outmost unstable fix
         points of the real bucket including self.p_increment .)
         """
-        self.interval = (zeta0 - 1.01*zmax, zeta0 + 1.01*zmax)
+        self.interval = interval
 
     @property
     def gamma(self):
@@ -423,6 +428,7 @@ class RFBucket:
         of the total_force) by comparing the voltages between the
         out-most UFP.
         '''
+        breakpoint()
         z0 = np.atleast_1d(self.zero_crossings(self.total_force))
 
         if not z0.size:
